@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Questions - MyCodeLab{% endblock %}
+
+{% block content %}
+<div class="questions-container">
+    <div class="page-header">
+        <h1>My Questions</h1>
+        <a href="{{ url_for('questions.add_question') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Question
+        </a>
+    </div>
+    
+    <div class="filters-bar">
+        <form method="GET" class="filter-form">
+            <input type="text" name="search" placeholder="Search questions..." value="{{ search or '' }}" class="form-control">
+            <select name="language" class="form-control">
+                <option value="">All Languages</option>
+                {% for lang in languages %}
+                    <option value="{{ lang }}" {% if language == lang %}selected{% endif %}>{{ lang }}</option>
+                {% endfor %}
+            </select>
+            <select name="difficulty" class="form-control">
+                <option value="">All Difficulties</option>
+                {% for diff in difficulties %}
+                    <option value="{{ diff }}" {% if difficulty == diff %}selected{% endif %}>{{ diff }}</option>
+                {% endfor %}
+            </select>
+            <select name="topic" class="form-control">
+                <option value="">All Topics</option>
+                {% for t in topics %}
+                    <option value="{{ t }}" {% if topic == t %}selected{% endif %}>{{ t }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-secondary">Filter</button>
+        </form>
+    </div>
+    
+    <div class="questions-grid">
+        {% if questions.items %}
+            {% for question in questions.items %}
+            <div class="question-card">
+                <div class="card-header">
+                    <h3><a href="{{ url_for('questions.view_question', question_id=question.id) }}">{{ question.title }}</a></h3>
+                    <span class="difficulty difficulty-{{ question.difficulty.lower() }}">{{ question.difficulty }}</span>
+                </div>
+                <div class="card-body">
+                    <p class="description">{{ question.description[:100] }}...</p>
+                    <div class="card-meta">
+                        <span class="badge"><i class="fas fa-code"></i> {{ question.language }}</span>
+                        {% if question.topic %}
+                            <span class="badge"><i class="fas fa-tag"></i> {{ question.topic }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <small>Created {{ question.created_at.strftime('%b %d, %Y') }}</small>
+                    <div class="card-actions">
+                        <a href="{{ url_for('questions.edit_question', question_id=question.id) }}" class="btn-sm btn-secondary">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button class="btn-sm btn-danger" onclick="deleteQuestion({{ question.id }})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="empty-state">No questions found. <a href="{{ url_for('questions.add_question') }}">Create one</a></p>
+        {% endif %}
+    </div>
+    
+    {% if questions.pages > 1 %}
+    <div class="pagination">
+        {% if questions.has_prev %}
+            <a href="{{ url_for('questions.list_questions', page=questions.prev_num) }}" class="btn-sm">Previous</a>
+        {% endif %}
+        
+        {% for page_num in questions.iter_pages() %}
+            {% if page_num %}
+                {% if page_num == questions.page %}
+                    <span class="active">{{ page_num }}</span>
+                {% else %}
+                    <a href="{{ url_for('questions.list_questions', page=page_num) }}">{{ page_num }}</a>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        
+        {% if questions.has_next %}
+            <a href="{{ url_for('questions.list_questions', page=questions.next_num) }}" class="btn-sm">Next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function deleteQuestion(id) {
+    if (confirm('Are you sure?')) {
+        fetch(`/questions/${id}/delete`, {method: 'POST'})
+            .then(() => location.reload());
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - MyCodeLab{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1>Welcome, {{ current_user.full_name }}!</h1>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-question-circle"></i></div>
+            <div class="stat-content">
+                <h3 id="totalQuestions">0</h3>
+                <p>Questions</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-file-code"></i></div>
+            <div class="stat-content">
+                <h3 id="totalFiles">0</h3>
+                <p>Code Files</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-play-circle"></i></div>
+            <div class="stat-content">
+                <h3 id="totalExecutions">0</h3>
+                <p>Executions</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-star"></i></div>
+            <div class="stat-content">
+                <h3 id="totalFavorites">0</h3>
+                <p>Favorites</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dashboard-grid">
+        <div class="card">
+            <h2>Quick Start</h2>
+            <div class="quick-actions">
+                <a href="{{ url_for('questions.add_question') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Question
+                </a>
+                <a href="{{ url_for('editor.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-code"></i> Open Editor
+                </a>
+                <a href="{{ url_for('questions.list_questions') }}" class="btn btn-secondary">
+                    <i class="fas fa-list"></i> My Questions
+                </a>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Recent Questions</h2>
+            <div id="recentQuestions" class="recent-list"></div>
+        </div>
+        
+        <div class="card">
+            <h2>Recent Files</h2>
+            <div id="recentFiles" class="recent-list"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+fetch('/questions/api/stats')
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('totalQuestions').textContent = data.total;
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Login - MyCodeLab{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-box">
+        <h1>Welcome Back</h1>
+        <p class="subtitle">Login to your MyCodeLab account</p>
+        
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="username_or_email">Username or Email</label>
+                <input type="text" id="username_or_email" name="username_or_email" required class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label class="checkbox">
+                    <input type="checkbox" name="remember" value="true">
+                    Remember me
+                </label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+        
+        <div class="auth-links">
+            <a href="{{ url_for('auth.forgot_password') }}">Forgot Password?</a>
+            <span>•</span>
+            <a href="{{ url_for('auth.register') }}">Create Account</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

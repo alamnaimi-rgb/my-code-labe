@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Register - MyCodeLab{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-box">
+        <h1>Create Account</h1>
+        <p class="subtitle">Join MyCodeLab and start coding</p>
+        
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="full_name">Full Name</label>
+                <input type="text" id="full_name" name="full_name" required class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required class="form-control">
+                <small id="usernameCheck"></small>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required class="form-control">
+                <small id="emailCheck"></small>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required class="form-control">
+                <small>Min 6 characters, must contain number and uppercase letter</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" required class="form-control">
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+        </form>
+        
+        <div class="auth-links">
+            <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('username').addEventListener('blur', function() {
+    const username = this.value;
+    if (username.length >= 3) {
+        fetch(`/auth/api/check-username/${username}`)
+            .then(r => r.json())
+            .then(data => {
+                const check = document.getElementById('usernameCheck');
+                check.textContent = data.message;
+                check.style.color = data.available ? 'green' : 'red';
+            });
+    }
+});
+
+document.getElementById('email').addEventListener('blur', function() {
+    const email = this.value;
+    if (email.includes('@')) {
+        fetch(`/auth/api/check-email/${email}`)
+            .then(r => r.json())
+            .then(data => {
+                const check = document.getElementById('emailCheck');
+                check.textContent = data.message;
+                check.style.color = data.available ? 'green' : 'red';
+            });
+    }
+});
+</script>
+{% endblock %}
